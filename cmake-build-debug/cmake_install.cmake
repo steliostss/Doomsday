@@ -1,4 +1,4 @@
-# Install script for directory: /home/guru/CLionProjects/Dooms
+# Install script for directory: /home/guru/CLionProjects/Doomsday
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -45,5 +45,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/guru/CLionProjects/Dooms/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/guru/CLionProjects/Doomsday/cmake-build-debug/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
