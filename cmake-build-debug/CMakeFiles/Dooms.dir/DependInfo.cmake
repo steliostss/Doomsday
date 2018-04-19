@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/guru/CLionProjects/Doomsday/main.cpp" "/home/guru/CLionProjects/Doomsday/cmake-build-debug/CMakeFiles/Dooms.dir/main.cpp.o"
+  "C:/Users/Stelios/CLionProjects/Doomsday/main.cpp" "C:/Users/Stelios/CLionProjects/Doomsday/cmake-build-debug/CMakeFiles/Dooms.dir/main.cpp.obj"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 

@@ -1,70 +1,64 @@
 #include <iostream>
-#include <queue>
+#include <fstream>
 
-class test_class {
-    private:
-        int length = -1;
-        int first = -1;
-        int height = -1;
-    public:
-        int getfirst()
-        {
-            return first;
-        }
-        int getlength()
-        {
-            return length;
-        }
-        void setfirst(int a)
-        {
-            first = a;
-        }
-        void setlength(int b)
-        {
-            length = b;
-        }
-        void printHello();
-
-        int getheight() { return height; }
-        int setheight(int val) { height = val; }
+#define BSIZE 1<<15
 
 
-        test_class() {}
-        test_class(int len);
-        test_class(int len, int fir);
-        test_class(int len, int fir, int hei);
-        ~test_class() {}
-};
+char buffer[BSIZE];
+char bpos = 0L, bsize = 0L;
 
-test_class::test_class(int len, int fir)
+char readLong(FILE* fp)
 {
-    length = len;
-    first = fir;
-    height = 0;
-}
+    char d = 0L, x = 0L;
+    char c;
 
-test_class::test_class(int len, int fir, int hei):
-    length(len), first(fir), height(hei)
-{ }
-
-test_class::test_class(int len):
-        length(len)
-{ }
-
-
-void test_class::printHello()
-{
-    std::cout << "Hello\n";
+    while (1)  {
+        if (bpos >= bsize) {
+            bpos = 0;
+            if (feof(fp)) return x;
+            bsize = (char) fread(buffer, 1, BSIZE, fp);
+        }
+        c = buffer[bpos++];
+        if (c == '.' || c == '+' || c == 'x' || c == '-')
+        {
+            d = 1;
+        }
+        else if (d == 1) return x;
+    }
+    return -1;
 }
 
 int main(int argc, char** argv) {
 
-    std::cout << "Hello, World!" << std::endl;
-
-
     if (argc < 2) { // We expect 3 arguments: the program name, the source path and the destination path
         std::cerr << "Usage: " << argv[0] << " SOURCE DESTINATION" << std::endl;
         return 1;
+    }
+
+    char myUniverse[1000][1000];
+    std::ifstream inputFile;
+    inputFile.open(argv[1]);
+
+    char myPlanet;
+    int col=0;
+    int row=0;
+    while (inputFile >> myPlanet)
+    {
+        myUniverse[row][col] = myPlanet;
+        col++;
+        if (inputFile.peek() == '\n') {
+            row++;
+            col = 0;
+        } //detect '\n'
+    }
+
+    //print universe
+    for(int i=0; i < (row+1); i++) {
+        for(int j=0; j < col; j++)
+        {
+            std::cout << myUniverse[i][j];
+        }
+        std::cout << std:: endl;
     }
 
     return 0;

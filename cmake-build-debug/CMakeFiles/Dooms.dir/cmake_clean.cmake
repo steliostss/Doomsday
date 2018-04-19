@@ -1,7 +1,9 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/Dooms.dir/main.cpp.o"
+  "CMakeFiles/Dooms.dir/main.cpp.obj"
   "Dooms.pdb"
-  "Dooms"
+  "Dooms.exe"
+  "Dooms.exe.manifest"
+  "libDooms.dll.a"
 )
 
 # Per-language clean rules from dependency scanning.
