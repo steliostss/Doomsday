@@ -1,33 +1,6 @@
 #include <iostream>
 #include <fstream>
 
-#define BSIZE 1<<15
-
-
-char buffer[BSIZE];
-char bpos = 0L, bsize = 0L;
-
-char readLong(FILE* fp)
-{
-    char d = 0L, x = 0L;
-    char c;
-
-    while (1)  {
-        if (bpos >= bsize) {
-            bpos = 0;
-            if (feof(fp)) return x;
-            bsize = (char) fread(buffer, 1, BSIZE, fp);
-        }
-        c = buffer[bpos++];
-        if (c == '.' || c == '+' || c == 'x' || c == '-')
-        {
-            d = 1;
-        }
-        else if (d == 1) return x;
-    }
-    return -1;
-}
-
 int main(int argc, char** argv) {
 
     if (argc < 2) { // We expect 3 arguments: the program name, the source path and the destination path
