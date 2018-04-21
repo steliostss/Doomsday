@@ -171,8 +171,8 @@ int main(int argc, char** argv) {
     int C = 0;
     int R = 0;
 
-    bool firstStar = false;
-    int doomTIME = -1;
+//    bool firstStar = false;
+//    int doomTIME = -1;
 
     while(!myQueue.empty())
     {
