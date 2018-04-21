@@ -79,6 +79,12 @@ void switch_case (queue <universe> &myQueue, universe** &myUniverse, const int &
                 break;
             }
             break;
+        case '*':
+            if (curColor == '+' || curColor == '-')
+            {
+                replAdd(myQueue, myUniverse, nextRow, nextCol, prevTime, '*');
+            }
+            break;
         default:
             break;
     }//WEST ELEMENT
@@ -132,7 +138,10 @@ void universeTraveler (universe **myUniverse, queue<universe> &myQueue, int &Nco
         char replColor = myUniverse[R][C].get_data();
 
         int prevTime = myUniverse[R][C].get_timeAdded();
-
+        if(boomDoom) {
+            if (prevTime > theTimeHasCome)
+                return;
+        }
         if (R < Mrows - 1) {
             int curTime = myUniverse[R + 1][C].get_timeAdded();
             char SOUTH = myUniverse[R + 1][C].get_data();
@@ -156,9 +165,6 @@ void universeTraveler (universe **myUniverse, queue<universe> &myQueue, int &Nco
             char WEST = myUniverse[R][C - 1].get_data();
             switch_case(myQueue, myUniverse, R, C - 1, WEST, prevTime, curTime, R, C, replColor);
         }//WEST
-
-        if (boomDoom)
-            return;
     }
 }
 
@@ -228,6 +234,7 @@ int main(int argc, char** argv) {
     for (int i = 0; i < Mrows; i++) {
         for (int j = 0; j < Ncols; j++) {
             printf("%c", myUniverse[i][j].get_data());
+            //printf("_%d ", myUniverse[i][j].get_timeAdded());
 
         }
         printf("\n");
@@ -236,6 +243,4 @@ int main(int argc, char** argv) {
     printf("\n");
 
     return 0;
-
 }
-
