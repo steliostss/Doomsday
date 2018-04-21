@@ -85,7 +85,7 @@ void read_size_of_universe(char* argv, int *ROWS, int *COLS)
     while(std::getline(inputFile, line))
     {
         if (readfirstLine == 0) {
-            nCol = line.length();
+            nCol = (int) line.length();
             readfirstLine++;
             nRow++;
         }
@@ -106,9 +106,9 @@ int main(int argc, char** argv) {
 //        myUniverse[i] = static_cast<universe *>(malloc(Mrows * sizeof(universe)));
 //    }
 
-    int Mrows; //rows
-    int Ncols; //columns
-    read_size_of_universe(argv[1], &Mrows, &Ncols);
+    int Mrows=1000; //rows
+    int Ncols=1000; //columns
+//    read_size_of_universe(argv[1], &Mrows, &Ncols);
 
 
     auto** myUniverse = new universe* [Ncols];
