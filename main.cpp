@@ -1,6 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <queue>
+#include <string>
+#include <tuple>
 
 static const char plus = '+';
 static const char minus = '-';
@@ -47,14 +49,15 @@ void switch_case (std::queue <universe> &myQueue, universe** &myUniverse, const 
         case dot:
             replAdd(myQueue, myUniverse, row, col, prevTime, replColor);
             break;
-        case minus:
-            if (replColor == plus) {
+
+        case plus:
+            if (replColor == minus) {
                 replAdd(myQueue, myUniverse, row, col, prevTime, star);
                 break;
             }
             break;
-        case plus:
-            if (replColor == minus) {
+        case minus:
+            if (replColor == plus) {
                 replAdd(myQueue, myUniverse, row, col, prevTime, star);
                 break;
             }
@@ -68,14 +71,50 @@ void switch_case (std::queue <universe> &myQueue, universe** &myUniverse, const 
     }//WEST ELEMENT
 }
 
+void read_size_of_universe(char* argv, int *ROWS, int *COLS)
+{
+
+    std::ifstream inputFile;
+    inputFile.open(argv);
+
+    int readfirstLine { 0 };
+
+    int nRow = 0;
+    int nCol = 0;
+    std::string line;
+    while(std::getline(inputFile, line))
+    {
+        if (readfirstLine == 0) {
+            nCol = line.length();
+            readfirstLine++;
+            nRow++;
+        }
+        else {
+            nRow++;
+        }
+    }
+    *ROWS = nRow;
+    *COLS = nCol;
+}
+
 int main(int argc, char** argv) {
-    int Mrows = 1000; //rows
-    int Ncols = 1000; //columns
     //must read file to calculate lines and columns
 
-    auto** myUniverse = static_cast<universe **>(malloc(Ncols * sizeof(universe)));
-    for(int i=0; i<1000; i++) {
-        myUniverse[i] = static_cast<universe *>(malloc(Mrows * sizeof(universe)));
+//    with malloc
+//    auto** myUniverse = static_cast<universe **>(malloc(Ncols * sizeof(universe)));
+//    for(int i=0; i<1000; i++) {
+//        myUniverse[i] = static_cast<universe *>(malloc(Mrows * sizeof(universe)));
+//    }
+
+    int Mrows; //rows
+    int Ncols; //columns
+    read_size_of_universe(argv[1], &Mrows, &Ncols);
+
+
+    auto** myUniverse = new universe* [Ncols];
+    for (int i = 0; i<Ncols; ++i)
+    {
+        myUniverse[i] = new universe [Mrows];
     }
 
     //creating universe
@@ -89,6 +128,7 @@ int main(int argc, char** argv) {
     std::ifstream inputFile;
     inputFile.open(argv[1]);
 
+    //read file
     while (inputFile.good())
     {
         auto c = (char) inputFile.get();
@@ -189,3 +229,4 @@ int main(int argc, char** argv) {
 
     return 0;
 }
+
