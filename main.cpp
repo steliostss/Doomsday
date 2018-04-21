@@ -14,6 +14,10 @@ using namespace std;
 //
 //static const char '*' = '*';
 
+
+static bool boomDoom = false;
+static int theTimeHasCome = -1;
+
 class universe {
 private:
     char data;
@@ -22,16 +26,16 @@ private:
     int row;
     int col;
 public:
-    char get_data() { return data; }
+    char get_data() const { return data; }
     void set_data(char c) { data = c; }
 
-    int get_timeAdded() { return timeAdded; }
+    int get_timeAdded() const { return timeAdded; }
     void set_timeAdded(int t) { timeAdded = t; }
 
-    int get_row() { return row; }
+    int get_row() const { return row; }
     void set_row(int r) { row = r; }
 
-    int get_col() { return col; }
+    int get_col() const { return col; }
     void set_col(int c) { col = c; }
 };
 
@@ -45,29 +49,35 @@ void replAdd(queue <universe> &myQueue, universe** myUniverse, int row, int col,
     myQueue.push(myUniverse[row][col]);
 }
 
-void switch_case (queue <universe> &myQueue, universe** &myUniverse, const int &row, const int &col, const int &prevTime, const char &replColor, const char &horizonState)
+void switch_case (queue <universe> &myQueue, universe** &myUniverse, const int &nextRow, const int &nextCol, const char &nextState, const int &prevTime, const int &curTime, const int &curRow, const int &curCol,  const char &curColor)
 {
-    switch (horizonState)
+    switch (nextState)
     {
         case '.':
-            replAdd(myQueue, myUniverse, row, col, prevTime, replColor);
+            replAdd(myQueue, myUniverse, nextRow, nextCol, prevTime, curColor);
             break;
 
         case '+':
-            if (replColor == '-') {
-                replAdd(myQueue, myUniverse, row, col, prevTime, '*');
+            if (curColor == '-') {
+                if(curTime == prevTime){
+                    replAdd(myQueue, myUniverse, curRow, curCol, prevTime, '*');
+                }
+                replAdd(myQueue, myUniverse, nextRow, nextCol, prevTime, '*');
+                boomDoom = true;
+                theTimeHasCome = prevTime+1;
                 break;
             }
             break;
         case '-':
-            if (replColor == '+') {
-                replAdd(myQueue, myUniverse, row, col, prevTime, '*');
+            if (curColor == '+') {
+                if(curTime == prevTime){
+                    replAdd(myQueue, myUniverse, curRow, curCol, prevTime, '*');
+                }
+                replAdd(myQueue, myUniverse, nextRow, nextCol, prevTime, '*');
+                boomDoom = true;
+                theTimeHasCome = prevTime+1;
                 break;
             }
-            break;
-        case '*':
-            break;
-        case 'X':
             break;
         default:
             break;
@@ -98,81 +108,17 @@ void read_size_of_universe(char* argv, int *ROWS, int *COLS)
     }
     *ROWS = nRow;
     *COLS = nCol;
+    inputFile.close();
+    return;
 }
 
-int main(int argc, char** argv) {
-    //must read file to calculate lines and columns
-
-//    with malloc
-//    auto** myUniverse = static_cast<universe **>(malloc(Ncols * sizeof(universe)));
-//    for(int i=0; i<1000; i++) {
-//        myUniverse[i] = static_cast<universe *>(malloc(Mrows * sizeof(universe)));
-//    }
-
-    int Mrows = 1000; //rows
-    int Ncols = 1000; //columns
-    read_size_of_universe(argv[1], &Mrows, &Ncols);
-
-
-    auto **myUniverse = new universe *[Ncols];
-    for (int i = 0; i < Ncols; ++i) {
-        myUniverse[i] = new universe[Mrows];
-    }
-
-    //creating universe
-    string myPlanet;
-    int col = 0;
-    int row = 0;
-
-    queue<universe> myQueue;
-
-    //create universe
-    ifstream inputFile;
-    inputFile.open(argv[1]);
-
-    //read file
-    while (inputFile.good()) {
-        auto c = (char) inputFile.get();
-        if (c == '\n') {
-            row++;
-            col = 0;
-            continue;
-        }
-        myUniverse[row][col].set_data(c);
-        char data = myUniverse[row][col].get_data();
-        myUniverse[row][col].set_row(row);
-        myUniverse[row][col].set_col(col);
-        //keep row and col because when you push it in the queue you lose it
-        //this way you can access the south/north/east/west planet
-
-        //set timeAdded = time = 0
-        myUniverse[row][col].set_timeAdded(0);
-
-        //put elements with t=0 to queue
-        if (data == '-' || data == '+') {
-            printf("ADDED\n");
-            myQueue.push(myUniverse[row][col]);
-        }
-
-        col++;
-    }
-
-    //universe created
-    row++;
-
-    printf("\n");
-    for (int i = 0; i < row; i++) {
-        for (int j = 0; j < col; j++) {
-            printf("%c", myUniverse[i][j].get_data());
-        }
-        printf("\n");
-    }
-
+void universeTraveler (universe **myUniverse, queue<universe> &myQueue, int &Ncols, int &Mrows)
+{
     int C = 0;
     int R = 0;
 
-//    bool first'*' = false;
-//    int doomTIME = -1;
+    //    bool first'*' = false;
+    //    int doomTIME = -1;
 
     while (!myQueue.empty()) {
         universe tempPlanet = myQueue.front();
@@ -187,38 +133,100 @@ int main(int argc, char** argv) {
 
         int prevTime = myUniverse[R][C].get_timeAdded();
 
-        //SOUTH
-        if (R < row - 1) {
+        if (R < Mrows - 1) {
+            int curTime = myUniverse[R + 1][C].get_timeAdded();
             char SOUTH = myUniverse[R + 1][C].get_data();
-            switch_case(myQueue, myUniverse, R + 1, C, prevTime, replColor, SOUTH);
-        }
+            switch_case(myQueue, myUniverse, R+1, C, SOUTH, prevTime, curTime, R, C, replColor);
+        }//SOUTH
 
-        //NORTH
-        if (R > 1) {
+        if (R > 0) {
+            int curTime = myUniverse[R - 1][C].get_timeAdded();
             char NORTH = myUniverse[R - 1][C].get_data();
-            switch_case(myQueue, myUniverse, R - 1, C, prevTime, replColor, NORTH);
-        }
+            switch_case(myQueue, myUniverse, R - 1, C, NORTH, prevTime, curTime, R, C, replColor);
+        }//NORTH
 
-        //EAST
-        if (C < col - 1) {
+        if (C < Ncols - 1) {
+            int curTime = myUniverse[R][C+1].get_timeAdded();
             char EAST = myUniverse[R][C + 1].get_data();
-            switch_case(myQueue, myUniverse, R, C + 1, prevTime, replColor, EAST);
-        }
+            switch_case(myQueue, myUniverse, R, C + 1, EAST, prevTime, curTime, R, C, replColor);
+        }//EAST
 
-        //WEST
-        if (C > 1) {
+        if (C > 0) {
+            int curTime = myUniverse[R][C-1].get_timeAdded();
             char WEST = myUniverse[R][C - 1].get_data();
-            switch_case(myQueue, myUniverse, R, C - 1, prevTime, replColor, WEST);
-        }
+            switch_case(myQueue, myUniverse, R, C - 1, WEST, prevTime, curTime, R, C, replColor);
+        }//WEST
+
+        if (boomDoom)
+            return;
+    }
+}
+
+
+int main(int argc, char** argv) {
+    //must read file to calculate lines and columns
+
+    int Mrows = -1; //rows
+    int Ncols = -1; //columns
+    read_size_of_universe(argv[1], &Mrows, &Ncols);
+
+//    printf("%d %d\n", Mrows, Ncols);
+
+
+    auto **myUniverse = new universe* [Mrows];
+    for (int i = 0; i < Mrows; ++i) {
+        myUniverse[i] = new universe[Ncols];
     }
 
+    //creating universe
+
+    queue<universe> myQueue;
+
+    ifstream inputFile;
+    inputFile.open(argv[1]);
+
+    for(int row=0; row<Mrows; row++) {
+        for (int col=0; col<Ncols; col++) {
+            auto c = (char) inputFile.get();
+            if (c == '\n'){
+                col = -1;
+                continue;
+            }
+            myUniverse[row][col].set_data(c);
+            myUniverse[row][col].set_row(row);
+            myUniverse[row][col].set_col(col);
+            //keep row and col because when you push it in the queue you lose it
+            //this way you can access the south/north/east/west planet
+            myUniverse[row][col].set_timeAdded(0);
+
+            if (c == '-' || c == '+') {
+                //printf("ADDED\n");
+                myQueue.push(myUniverse[row][col]);
+            }
+        }
+    }
+    //universe created
+
+//    printf("\n");
+//    for (int i = 0; i < Mrows; i++) {
+//        for (int j = 0; j < Ncols; j++) {
+//            printf("%c", myUniverse[i][j].get_data());
+//        }
+//        printf("\n");
+//    }
+
+    universeTraveler(myUniverse, myQueue, Ncols, Mrows);
+
+
     //print universe
-
-    printf("\n");
-    printf("\n");
-
-    for (int i = 0; i < row; i++) {
-        for (int j = 0; j < col - 1; j++) {
+    if(boomDoom) {
+        printf("%d\n", theTimeHasCome);
+    }
+    else {
+        printf("the world is saved\n");
+    }
+    for (int i = 0; i < Mrows; i++) {
+        for (int j = 0; j < Ncols; j++) {
             printf("%c", myUniverse[i][j].get_data());
 
         }
