@@ -40,22 +40,29 @@ void replAdd(std::queue <universe> &myQueue, universe** myUniverse, int row, int
     myQueue.push(myUniverse[row][col]);
 }
 
-void switch_case (std::queue <universe> &myQueue, universe** myUniverse, int row, int col, int prevTime, char replColor, char x)
+void switch_case (std::queue <universe> &myQueue, universe** &myUniverse, const int &row, const int &col, const int &prevTime, const char &replColor, const char &horizonState)
 {
-    switch (x)
+    switch (horizonState)
     {
         case dot:
             replAdd(myQueue, myUniverse, row, col, prevTime, replColor);
             break;
         case minus:
-            if (replColor != minus) {
+            if (replColor == plus) {
                 replAdd(myQueue, myUniverse, row, col, prevTime, star);
                 break;
             }
+            break;
         case plus:
-            if (replColor != plus) {
+            if (replColor == minus) {
                 replAdd(myQueue, myUniverse, row, col, prevTime, star);
+                break;
             }
+            break;
+        case star:
+            break;
+        case obs:
+            break;
         default:
             break;
     }//WEST ELEMENT
@@ -110,10 +117,10 @@ int main(int argc, char** argv) {
         col++;
     }
     //universe created
-
+    row++;
 
     std::cout << std::endl;
-    for(int i=0; i < (row+1); i++) {
+    for(int i=0; i < row; i++) {
         for(int j=0; j < col; j++)
         {
             std::cout << (myUniverse[i][j]).get_data();
@@ -123,6 +130,9 @@ int main(int argc, char** argv) {
 
     int C = 0;
     int R = 0;
+
+    bool firstStar = false;
+    int doomTIME = -1;
 
     while(!myQueue.empty())
     {
@@ -165,16 +175,16 @@ int main(int argc, char** argv) {
 
     //print universe
 
-    std::cout << std::endl;
-    for(int i=0; i < (row+1); i++) {
+    std::cout << std::endl << std::endl;
+    for(int i=0; i < row; i++) {
         for(int j=0; j < col-1; j++)
         {
             std::cout << (myUniverse[i][j]).get_data();
-            std::cout << "_";
-            std::cout << (myUniverse[i][j]).get_timeAdded();
-            std::cout << " ";
+//            std::cout << "  _";
+//            std::cout << (myUniverse[i][j]).get_timeAdded();
+//            std::cout << "    ";
         }
-        std::cout << std:: endl;
+        std::cout << std::endl;
     }
 
     return 0;
